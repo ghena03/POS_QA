@@ -1,0 +1,105 @@
+test_cases:
+
+  - id: TC-01
+    name: Application Startup
+    setup:
+      application: SENDiPAD
+      state: fresh_start
+
+    steps:
+      - action: start_application
+
+      - action: verify_window
+        target: "SENDiPAD POS"
+
+    expected:
+      status: PASS
+      message: "SENDiPAD POS is running."
+
+
+  - id: TC-02
+    name: Valid Login
+    setup:
+      application: SENDiPAD
+      state: login_screen
+
+    steps:
+      - action: enter
+        target: "Enter PIN"
+        value: "${SENDIPAD_PIN}"
+
+      - action: click
+        target: "Login"
+
+      - action: wait
+        seconds: 2
+
+      - action: verify
+        target: "Enter PIN"
+        condition: not_visible
+
+    expected:
+      status: PASS
+      message: "Login succeeded."
+
+
+  - id: TC-03
+    name: Invalid Login
+
+    setup:
+      application: SENDiPAD
+      state: login_screen
+
+    steps:
+      - action: enter
+        target: "Enter PIN"
+        value: "${INVALID_PIN}"
+
+      - action: click
+        target: "Login"
+
+      - action: wait
+        seconds: 2
+
+      - action: verify
+        target: "Incorrect Pin Code"
+        condition: visible
+
+      - action: screenshot
+        name: invalid_login_rejected
+
+      - action: click
+        target: "OK"
+
+      - action: verify
+        target: "Enter PIN"
+        condition: visible
+
+    expected:
+      status: PASS
+      message: "Invalid PIN was rejected and the login screen remained available."
+
+  - id: TC-04
+    name: Table Navigation
+
+    setup:
+      application: SENDiPAD
+      state: logged_in
+
+    steps:
+      - action: click
+        target: "Table"
+
+      - action: wait
+        seconds: 2
+
+      - action: screenshot
+        name: table_screen
+
+      - action: verify
+        target: "There Is No Tables Added Yet"
+        condition: visible
+
+    expected:
+      status: PASS
+      message: "Table screen opened successfully."
